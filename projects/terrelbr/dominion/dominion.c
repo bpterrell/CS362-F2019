@@ -853,7 +853,119 @@ int ambassadorEffect(int currentPlayer, int cardToTrash, int qtyToTrash, struct 
     return 0;
 }
 
+/*
+Cleaned up and commented code.
+Current code is very broken and needs work before any real polishing.
 
+BUGS:
+-   Deckcounter logic error that always draws the second card as a NULL.
+-   Condtional to determine if the player's one and only card is in the 
+    discard pile will pass true with a count of zero. Logic will except 
+    a NULL value (-1) as a card and decrement the discard pile, which 
+    might break another oppertion for that player. If the -1 card count 
+    doesn't catch up with the player then they will at least be 
+    rewarded with two actions due to poor design later in the function.    
+*/
+int tributeEffect(int currentPlayer, int nextPlayer, struct gameState *state){
+    int tributeRevealedCards[2] = {-1, -1};                                                         //THE LOGIC OF THE NEXT ~15 LINES IS VERY BROKEN. 
+    if ((state->discardCount[nextPlayer] + state->deckCount[nextPlayer]) <= 1) {                    //If next player has one or less cards
+        if (state->deckCount[nextPlayer] > 0) {                                                     //Check for card in deck
+            tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];      //If in deck, reveal card to array
+            state->deckCount[nextPlayer]--;                                                         //Decriment deck
+        }
+//BUG   else if (state->discardCount[nextPlayer] > 0) --->> else if (state->discardCount[nextPlayer] >= 0)
+        else if (state->discardCount[nextPlayer] >= 0) {                                             //Else, check for card in discard
+            tributeRevealedCards[0] = state->discard[nextPlayer][state->discardCount[nextPlayer]-1];//If in discard, reveal card to array
+            state->discardCount[nextPlayer]--;                                                      //Decriment discard
+        }
+        else {                                                                                      //If Cards move on. 
+            //No Card to Reveal
+            if (DEBUG) {
+                printf("No cards to reveal\n");
+            }
+        }
+    }
+    else {                                                                                  //If next player has at least two cards but non in the deck
+        if (state->deckCount[nextPlayer] == 0) {
+            for (int i = 0; i < state->discardCount[nextPlayer]; i++) {                     //Move discard pile to deck
+                state->deck[nextPlayer][i] = state->discard[nextPlayer][i];
+                state->deckCount[nextPlayer]++;
+                state->discard[nextPlayer][i] = -1;
+                state->discardCount[nextPlayer]--;
+            }
+            shuffle(nextPlayer,state);                                                      //Shuffle the deck
+        }
+        tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];  //Reveal top card to revealed array 
+        state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
+//BUG# 1 Commented out line below
+        //state->deckCount[nextPlayer]--;
+        tributeRevealedCards[1] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];  //Reveal top card - 1 to revealed array 
+        state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
+//BUG# 1 state->deckCount[nextPlayer]--;  --->> state->deckCount[nextPlayer] += 2;
+        state->deckCount[nextPlayer] += 2;
+    }
+
+    if (tributeRevealedCards[0] == tributeRevealedCards[1]) {                               //If we have a duplicate card, just drop one
+        state->playedCards[state->playedCardCount] = tributeRevealedCards[1];
+        state->playedCardCount++;
+        tributeRevealedCards[1] = -1;
+    }
+
+    for (int i = 0; i <= 2; i ++) {                                                         //loops through revealed cards array to realize awards
+                                                                                            //If treasure card
+        if (tributeRevealedCards[i] == copper || tributeRevealedCards[i] == silver || tributeRevealedCards[i] == gold) {        
+            state->coins += 2;
+        }
+                                                                                            //If victory card
+        else if (tributeRevealedCards[i] == estate || tributeRevealedCards[i] == duchy || tributeRevealedCards[i] == province || tributeRevealedCards[i] == gardens || tributeRevealedCards[i] == great_hall) { //Victory Card Found
+            drawCard(currentPlayer, state);
+            drawCard(currentPlayer, state);
+        }
+        else {                                                                              //If Action Card <-- NOPE! -- If anything else... Very broken! 
+            state->numActions = state->numActions + 2;
+        }
+    }
+    return 0;
+}
+
+/*
+Clarified choice1 and choice2 to treasToTrash and treasToGain
+Added a helper function to find a crd and it's pos to trash 
+Simplifed trashing function 
+
+
+BUGS:
+-   Conditional for checking id treasure to trash has a 
+    valid value was changed from an OR to an AND, which 
+    should effectively remove this error state from any 
+    possible condition. 
+-   Contitional to verify TTG is within the 3 unit 
+    difference of TTT is broken and will not keep a 
+    player from being rewared a higher value card. 
+*/
+
+int mineEffect(int currentPlayer, int treasToTrash, int treasToGain, struct gameState *state, int handPos){
+//BUG if (state->hand[currentPlayer][treasToTrash] < copper || state->hand[currentPlayer][treasToTrash] > gold) --->> if (state->hand[currentPlayer][treasToTrash] < copper && state->hand[currentPlayer][treasToTrash] > gold)
+    if (state->hand[currentPlayer][treasToTrash] < copper && state->hand[currentPlayer][treasToTrash] > gold){      //Check that treasure to trash has valid value
+        return -1;
+    }
+    if (treasToGain > treasure_map || treasToGain < curse){                                                         //Check that treasure to gain has valid value
+        return -1;
+    }
+    if ( (getCost(state->hand[currentPlayer][treasToTrash]) + 3) > getCost(treasToGain) ){        //Check that value difference bewteen TTG and TTT is no grtr than 3
+//BUG Commented out line below 
+        //return -1;
+    }
+
+    int cardToTrash = findCardInHand(state->hand[currentPlayer][treasToTrash], currentPlayer, state);   //Find treasure to trash in hand
+    discardCard(cardToTrash, currentPlayer, state, 0);                                                  //Trash it 
+
+    gainCard(treasToGain, state, 2, currentPlayer);                                                     //Gain TTG
+    
+    discardCard(handPos, currentPlayer, state, 0);                                                      //Discard mine card from hand
+
+    return 0;
+}
 
 
 int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus)
