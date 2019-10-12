@@ -795,8 +795,63 @@ int minionEffect(int currentPlayer, int action, int attack, struct gameState *st
     }
     return 0;
 }
+/*
+Clarified choice1 and choice2 to qtyToTrash and cardToTrash
+Clarified j to cardsAvalToTrash
+Added a helper function to find a crd and it's pos to trash 
+Simplifed trashing function 
+Added Debug line
 
+BUGS:
+-   Cards to trash are not trashed but instead discarded.
+-   Trash segement of code inrements the current player 
+    for each card to be disposed which will likey do 
+    all things bad. 
 
+*/
+int ambassadorEffect(int currentPlayer, int cardToTrash, int qtyToTrash, struct gameState *state, int handPos){
+    int cardsAvalToTrash = 0;                                    //Tracks number of cards avalible to trash
+    
+    if (qtyToTrash > 2 || qtyToTrash < 0){                       //Check if player has chosen a vaid number of cards to trash 
+        return -1;
+    }
+    if (cardToTrash == handPos){                                 //Card to trash cannot be the ambassador card
+        return -1;
+    }
+    for (int i = 0; i < state->handCount[currentPlayer]; i++){   //Count number of cards avalible to trash
+        if (i != handPos && i == state->hand[currentPlayer][cardToTrash] && i != cardToTrash){
+            cardsAvalToTrash++;
+        }
+    }
+    if (cardsAvalToTrash < qtyToTrash){                          //Check if player has enough cards to trash
+        return -1;
+    }
+    if (DEBUG){
+        printf("Player %d reveals card number: %d\n", currentPlayer, state->hand[currentPlayer][cardToTrash]);
+    }
+
+    state->supplyCount[state->hand[currentPlayer][cardToTrash]] += qtyToTrash;  //Add cards to trash back to supply
+
+    for (int i = 0; i < state->numPlayers; i++){                    //each other player gains a copy of revealed card
+        if (i != currentPlayer){
+            gainCard(state->hand[currentPlayer][cardToTrash], state, 0, i);
+        }
+    }
+
+    discardCard(handPos, currentPlayer, state, 0);               //discard played card from hand
+
+    for (int j = 0; j < qtyToTrash; j++){                        //trash copies of cards returned to supply
+//BUG Line added below        
+        currentPlayer++;
+        int cardIndex = findCardInHand(state->hand[currentPlayer][cardToTrash], currentPlayer, state); //Find card in hand
+        if (DEBUG && cardIndex == -1){                            
+            printf("Incorrect number of cards to trash.\n");
+        }
+//BUG   discardCard(cardIndex, currentPlayer, state, 1); ---->> discardCard(cardIndex, currentPlayer, state, 0);
+        discardCard(cardIndex, currentPlayer, state, 0);        //Trash card
+    }
+    return 0;
+}
 
 
 
