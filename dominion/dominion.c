@@ -67,7 +67,7 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,
 
 
     //initialize supply
-    //////////////////////////////
+    ///////////////////////////////
 
     //set number of Curse cards
     if (numPlayers == 2)
@@ -889,45 +889,45 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
         return 0;
 
     case baron:
-        state->numBuys++;                                                                                               //Increase buys by 1!
-        if (choice1 > 0) {                                                                                              //Boolean true if going to discard an estate
-            int p = 0;                                                                                                  //Iterator for hand!
-            int card_not_discarded = 1;                                                                                 //Flag for discard set!
-            while(card_not_discarded) {                                                                                 //Loop until Estate card is found or no more cards
-                if (state->hand[currentPlayer][p] == estate) {                                                          //Found an estate card!
-                    state->coins += 4;                                                                                  //Add 4 coins to the amount of coins
-                    state->discard[currentPlayer][state->discardCount[currentPlayer]] = state->hand[currentPlayer][p];  //Place found estate card into discard pile
-                    state->discardCount[currentPlayer]++;                                                               //Increment the discard count for current player
-                    for (; p < state->handCount[currentPlayer]; p++) {                                                  //Delete estate card from hand and consolidate deck
+        state->numBuys++;//Increase buys by 1!
+        if (choice1 > 0) { //Boolean true or going to discard an estate
+            int p = 0;//Iterator for hand!
+            int card_not_discarded = 1;//Flag for discard set!
+            while(card_not_discarded) {
+                if (state->hand[currentPlayer][p] == estate) { //Found an estate card!
+                    state->coins += 4;//Add 4 coins to the amount of coins
+                    state->discard[currentPlayer][state->discardCount[currentPlayer]] = state->hand[currentPlayer][p];
+                    state->discardCount[currentPlayer]++;
+                    for (; p < state->handCount[currentPlayer]; p++) {
                         state->hand[currentPlayer][p] = state->hand[currentPlayer][p+1];
                     }
-                    state->hand[currentPlayer][state->handCount[currentPlayer]] = -1;                                   //NULL out last card in hand
-                    state->handCount[currentPlayer]--;                                                                  //Decrement hand count
-                    card_not_discarded = 0;                                                                             //Exit the loop
+                    state->hand[currentPlayer][state->handCount[currentPlayer]] = -1;
+                    state->handCount[currentPlayer]--;
+                    card_not_discarded = 0;//Exit the loop
                 }
-                else if (p > state->handCount[currentPlayer]) {                                                         //IF current card IS NOT Estate, and loop overran deck 
-                    if(DEBUG) {                                                                     
+                else if (p > state->handCount[currentPlayer]) {
+                    if(DEBUG) {
                         printf("No estate cards in your hand, invalid choice\n");
                         printf("Must gain an estate if there are any\n");
                     }
-                    if (supplyCount(estate, state) > 0) {                                                               //If Estate cards still in pile
-                        gainCard(estate, state, 0, currentPlayer);                                                      //Call function to transfer Estate card to player
+                    if (supplyCount(estate, state) > 0) {
+                        gainCard(estate, state, 0, currentPlayer);
 
-                        state->supplyCount[estate]--;                                                                   //Decrement Estate card count
-                        if (supplyCount(estate, state) == 0) {                                                          //If that was last estate card check if game is over
+                        state->supplyCount[estate]--;//Decrement estates
+                        if (supplyCount(estate, state) == 0) {
                             isGameOver(state);
                         }
                     }
-                    card_not_discarded = 0;                                                                             //Exit the Loop
+                    card_not_discarded = 0;//Exit the loop
                 }
 
                 else {
-                    p++;                                                                                                //Next card
+                    p++;//Next card
                 }
             }
         }
 
-        else {                                                                                                          //If player chooses on there own to gain an Estate (similar to else if above)
+        else {
             if (supplyCount(estate, state) > 0) {
                 gainCard(estate, state, 0, currentPlayer);//Gain an estate
 
