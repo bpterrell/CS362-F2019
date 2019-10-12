@@ -681,6 +681,70 @@ int getCost(int cardNumber)
 
     return -1;
 }
+/*
+Changed Param names to fit purpose not choice1
+Changed p to handPos for clarity
+Added a helper function to find a crd and it's pos
+The discarding of the estate card is now handles by the existing function
+Simplified the gaining of an estate card 
+
+
+
+*/
+int baronEffect(int currentPlayer, int discardEstate, struct gameState *state, int handPos, int *bonus){
+    state->numBuys++;                                                               //Increase buys by 1 to satisfy card effect
+    int cardPositon = -1;                                                           //Tracks the position of an estate card if found in deck
+    if (discardEstate > 0) {                                                        //Boolean true if going to discard an estate
+        cardPositon = findCardInHand(estate, currentPlayer, state);                 //Find estate card in deck
+        if (cardPositon > -1) {                                                     //Found an estate card!
+            state->coins += 4;                                                      //Add 4 coins to the amount of coins
+            discardCard(cardPositon, currentPlayer, state, 0);                      //Discard estate card from hand
+        }
+        else if (cardPositon == -1) {                                               //If no card found
+            if(DEBUG) {                                                                     
+                printf("No estate cards in your hand, invalid choice\n");
+                printf("Must gain an estate if there are any\n");
+            }  
+        }   
+    }
+    if(discardEstate == 0 || cardPositon == -1){                                    //If player chooses not to discard estate or one is not found
+        if (supplyCount(estate, state) > 0) {                                       //If there are still estate cards
+            gainCard(estate, state, 0, currentPlayer);                              //Gain an estate
+            state->supplyCount[estate]--;                                           //Decrement Estates
+            if (supplyCount(estate, state) == 0) {                                  //If that was last card check if the game is over
+                isGameOver(state);
+            }
+        }
+    }
+    return 0;
+}
+
+/*
+Clarified iterator from p to handPos
+
+
+*/
+int findCardInHand(int card, int currentPlayer, struct gameState *state){
+    int handPos = 0;                                                                                                  //Iterator for hand!
+    int card_not_found = 1;                                                                                 //Flag for discard set!
+    while(card_not_found) {                                                                                 //Loop until Estate card is found or no more cards
+        if (state->hand[currentPlayer][handPos] == card) {                                                          //Found an estate card
+            card_not_found = 0;                                                                             //Exit the loop
+        }
+        else if (handPos >= state->handCount[currentPlayer]) {                                                         //IF current card IS NOT Estate, and loop overran deck 
+            if(DEBUG) {                                                                     
+                printf("No card of this type in your hand, invalid choice\n");
+            }
+            return -1;
+        }
+        else {
+            handPos++;                                                                                                //Next card
+        }
+    }
+    return handPos;
+}
+
+
 
 int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus)
 {
