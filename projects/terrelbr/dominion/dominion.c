@@ -681,6 +681,35 @@ int getCost(int cardNumber)
 
     return -1;
 }
+
+
+/*
+Clarified iterator from p to handPos
+
+
+*/
+int findCardInHand(int card, int currentPlayer, struct gameState *state){
+    int handPos = 0;                                                                                                  //Iterator for hand!
+    int card_not_found = 1;                                                                                 //Flag for discard set!
+    while(card_not_found) {                                                                                 //Loop until Estate card is found or no more cards
+        if (state->hand[currentPlayer][handPos] == card) {                                                          //Found an estate card
+            card_not_found = 0;                                                                             //Exit the loop
+        }
+ //BUG  else if (handPos >= state->handCount[currentPlayer]). ---->> else if (handPos > state->handCount[currentPlayer])     
+        else if (handPos > state->handCount[currentPlayer]) {                                                         //IF current card IS NOT Estate, and loop overran deck 
+            if(DEBUG) {                                                                     
+                printf("No card of this type in your hand, invalid choice\n");
+            }
+            return -1;
+        }
+        else {
+            handPos++;                                                                                                //Next card
+        }
+    }
+    return handPos;
+}
+
+
 /*
 Changed Param names to fit purpose not choice1
 Changed p to handPos for clarity
@@ -688,10 +717,13 @@ Added a helper function to find a crd and it's pos
 The discarding of the estate card is now handles by the existing function
 Simplified the gaining of an estate card 
 
-
+Bugs:
+-   If card is not found, then findCardInHand() will overrun the last element 
+    by one which could cause a seg fault on a large hand.
+-   No longer decrement the estate supply if card is drawn from supply. 
 
 */
-int baronEffect(int currentPlayer, int discardEstate, struct gameState *state, int handPos, int *bonus){
+int baronEffect(int currentPlayer, int discardEstate, struct gameState *state){
     state->numBuys++;                                                               //Increase buys by 1 to satisfy card effect
     int cardPositon = -1;                                                           //Tracks the position of an estate card if found in deck
     if (discardEstate > 0) {                                                        //Boolean true if going to discard an estate
@@ -710,7 +742,8 @@ int baronEffect(int currentPlayer, int discardEstate, struct gameState *state, i
     if(discardEstate == 0 || cardPositon == -1){                                    //If player chooses not to discard estate or one is not found
         if (supplyCount(estate, state) > 0) {                                       //If there are still estate cards
             gainCard(estate, state, 0, currentPlayer);                              //Gain an estate
-            state->supplyCount[estate]--;                                           //Decrement Estates
+//BUG No longer remove estate card from supply.
+            //state->supplyCount[estate]--;                                           //Decrement Estates
             if (supplyCount(estate, state) == 0) {                                  //If that was last card check if the game is over
                 isGameOver(state);
             }
@@ -718,31 +751,53 @@ int baronEffect(int currentPlayer, int discardEstate, struct gameState *state, i
     }
     return 0;
 }
-
 /*
-Clarified iterator from p to handPos
+Added instantiators i and j
+Cleaned up comments, whitespace, and brackets
+Choice1 and choice2 renamed to action and attack
+Combined if statments
 
 
+BUGS:
+-   The action sets coins equal to two instead of 
+    adding 2. This bug would onebecome evident if 
+    the player had already plaed a card that 
+    added coin for the buy round. 
+-   Overrun the player array by 1
 */
-int findCardInHand(int card, int currentPlayer, struct gameState *state){
-    int handPos = 0;                                                                                                  //Iterator for hand!
-    int card_not_found = 1;                                                                                 //Flag for discard set!
-    while(card_not_found) {                                                                                 //Loop until Estate card is found or no more cards
-        if (state->hand[currentPlayer][handPos] == card) {                                                          //Found an estate card
-            card_not_found = 0;                                                                             //Exit the loop
+
+int minionEffect(int currentPlayer, int action, int attack, struct gameState *state, int handPos){
+    state->numActions++;                                        //Increase actions by 1 to satisfy card effect
+    discardCard(handPos, currentPlayer, state, 0);              //Discard minion card
+
+    if(action){                                                 //If player chooses 'action', then 2 coins are gained. 
+//BUG  state->coins = state->coins + 2;  ---->> state->coins = 2;
+        state->coins = state->coins + 2;
+    }
+    else if(attack){                                            //If player chooses 'action', discard hand, redraw 4, other players with 5+ cards discard hand and draw 4
+        while(numHandCards(state) > 0)  {                       //Discard current player's whole hand
+            discardCard(0, currentPlayer, state, 0);
         }
-        else if (handPos >= state->handCount[currentPlayer]) {                                                         //IF current card IS NOT Estate, and loop overran deck 
-            if(DEBUG) {                                                                     
-                printf("No card of this type in your hand, invalid choice\n");
+        for (int i = 0; i < 4; i++){                            //Current player draws 4 new cards
+            drawCard(currentPlayer, state);
+        }
+//BUG  (int i = 0; i < state->numPlayers; i++) ---->> (int i = 0; i <= state->numPlayers; i++)
+        for (int i = 0; i < state->numPlayers; i++){            //Other players discard hand and redraw if hand size > 4
+            if (i != currentPlayer && state->handCount[i] > 4 ){
+                while( state->handCount[i] > 0 ){               //Discard player's hand
+                    discardCard(0, i, state, 0);
+                }
+                for (int j = 0; j < 4; j++){                    //Cureent player draws 4 new cards
+                    drawCard(i, state);
+                }
             }
-            return -1;
-        }
-        else {
-            handPos++;                                                                                                //Next card
         }
     }
-    return handPos;
+    return 0;
 }
+
+
+
 
 
 
