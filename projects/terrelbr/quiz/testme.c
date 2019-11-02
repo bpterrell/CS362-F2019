@@ -3,16 +3,29 @@
 #include<stdlib.h>
 #include<time.h>
 
-char inputChar()
-{
-    // TODO: rewrite this function
-    return ' ';
-}
+char testString[6];
 
-char *inputString()
-{
-    // TODO: rewrite this function
-    return "";
+char inputChar(){
+    char charToTest;     
+    char selectTestChar[9] = {'[', '(', '{', ' ', 'a', 'x', '}', ')', ']'};
+    if (!(rand() % 20)){ //Test select chars at a probability of ~0.05
+      charToTest = selectTestChar[(rand() % 9)]; // Randomly select char from array
+    }else{
+      charToTest = ((rand() % 95) + 32); //otherwise randomply select ASCII space through ~
+    }
+    return charToTest;
+}
+ 
+char *inputString(){
+    char selectTestChar[4] = {'r', 's', 'e', 't'};
+    for (int i = 0; i < 5; i++){      //Loop to make string of 5 chars
+      if (rand() % 10){               //Include select char at a probability of ~0.1
+        testString[i] = selectTestChar[(rand() % 4)]; // Randomly select char from array
+      }else{
+        testString[i] = ((rand() % 95) + 32); //otherwise randomply select ASCII space through ~
+      }
+    }
+    return testString;
 }
 
 void testme()
