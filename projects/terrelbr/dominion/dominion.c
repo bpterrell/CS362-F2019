@@ -781,9 +781,11 @@ int minionEffect(int currentPlayer, int action, int attack, struct gameState *st
         }
 //BUG  (int i = 0; i < state->numPlayers; i++) ---->> (int i = 0; i <= state->numPlayers; i++)
         //for (int i = 0; i <= state->numPlayers; i++){            //Other players discard hand and redraw if hand size > 4 
-        
+
+
         for (int i = 0; i < state->numPlayers; i++){            //Other players discard hand and redraw if hand size > 4 
-            if (i != currentPlayer && state->handCount[i] > 4 ){
+//BUG  if (i != currentPlayer && state->handCount[i] > 4 ){ ---->> if (i != currentPlayer){
+            if (i != currentPlayer){
                 while( state->handCount[i] > 0 ){               //Discard player's hand
                     discardCard(0, i, state, 0);
                 }
@@ -823,7 +825,7 @@ int ambassadorEffect(int currentPlayer, int cardToTrash, int qtyToTrash, struct 
         return -1;
     }
     for (int i = 0; i < state->handCount[currentPlayer]; i++){   //Count number of cards avalible to trash
-        if (i != handPos && i == state->hand[currentPlayer][cardToTrash] && i != cardToTrash){
+        if (i != handPos && state->hand[currentPlayer][i] == state->hand[currentPlayer][cardToTrash] && i != cardToTrash){
             cardsAvalToTrash++;
         }
     }
@@ -850,8 +852,10 @@ int ambassadorEffect(int currentPlayer, int cardToTrash, int qtyToTrash, struct 
             printf("Incorrect number of cards to trash.\n");
         }
         discardCard(cardIndex, currentPlayer, state, 1);        //Trash card
+        printf("test!\n");
+
 //BUG Line added below        
-        currentPlayer++;
+        //currentPlayer++;
     }
     return 0;
 }
@@ -870,6 +874,7 @@ BUGS:
     doesn't catch up with the player then they will at least be 
     rewarded with two actions due to poor design later in the function.    
 */
+
 int tributeEffect(int currentPlayer, int nextPlayer, struct gameState *state){
     int tributeRevealedCards[2] = {-1, -1};                                                         //THE LOGIC OF THE NEXT ~15 LINES IS VERY BROKEN. 
     if ((state->discardCount[nextPlayer] + state->deckCount[nextPlayer]) <= 1) {                    //If next player has one or less cards
@@ -877,7 +882,7 @@ int tributeEffect(int currentPlayer, int nextPlayer, struct gameState *state){
             tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];      //If in deck, reveal card to array
             state->deckCount[nextPlayer]--;                                                         //Decriment deck
         }
-//BUG   else if (state->discardCount[nextPlayer] > 0) --->> else if (state->discardCount[nextPlayer] >= 0)
+//BUG  else if (state->discardCount[nextPlayer] > 0) --->> else if (state->discardCount[nextPlayer] >= 0)
         else if (state->discardCount[nextPlayer] >= 0) {                                                  //Else, check for card in discard
             tributeRevealedCards[0] = state->discard[nextPlayer][state->discardCount[nextPlayer]-1];      //If in discard, reveal card to array
             state->discardCount[nextPlayer]--;                                                            //Decriment discard
@@ -901,11 +906,11 @@ int tributeEffect(int currentPlayer, int nextPlayer, struct gameState *state){
         }
         tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];  //Reveal top card to revealed array 
         state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
-//BUG# 1 Commented out line below
+//BUG Commented out line below
         //state->deckCount[nextPlayer]--;
         tributeRevealedCards[1] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];  //Reveal top card - 1 to revealed array 
         state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
-//BUG# 1 state->deckCount[nextPlayer]--;  --->> state->deckCount[nextPlayer] -= 2;
+//BUG state->deckCount[nextPlayer]--;  --->> state->deckCount[nextPlayer] -= 2;
         state->deckCount[nextPlayer] -= 2;
     }
 
@@ -957,7 +962,7 @@ BUGS:
 int mineEffect(int currentPlayer, int treasToTrash, int treasToGain, struct gameState *state, int handPos){
     int tempTrshCrd = state->hand[currentPlayer][treasToTrash];
 //BUG if (state->hand[currentPlayer][treasToTrash] < copper || state->hand[currentPlayer][treasToTrash] > gold) --->> if (state->hand[currentPlayer][treasToTrash] < copper && state->hand[currentPlayer][treasToTrash] > gold)
-    if (state->hand[currentPlayer][treasToTrash] < copper && state->hand[currentPlayer][treasToTrash] > gold){      //Check that treasure to trash has valid value
+    if (state->hand[currentPlayer][treasToTrash] < copper || state->hand[currentPlayer][treasToTrash] > gold){      //Check that treasure to trash has valid value
         return -1;
     }
     if (treasToGain > treasure_map || treasToGain < curse){                                                         //Check that treasure to gain has valid value
