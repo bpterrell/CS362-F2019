@@ -781,8 +781,6 @@ int minionEffect(int currentPlayer, int action, int attack, struct gameState *st
         }
 //BUG  (int i = 0; i < state->numPlayers; i++) ---->> (int i = 0; i <= state->numPlayers; i++)
         //for (int i = 0; i <= state->numPlayers; i++){            //Other players discard hand and redraw if hand size > 4 
-
-
         for (int i = 0; i < state->numPlayers; i++){            //Other players discard hand and redraw if hand size > 4 
 //BUG  if (i != currentPlayer && state->handCount[i] > 4 ){ ---->> if (i != currentPlayer){
             if (i != currentPlayer){
