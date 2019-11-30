@@ -834,6 +834,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             if (state->hand[currentPlayer][i] == j)
             {
                 discardCard(i, currentPlayer, state, 0);
+                //discardCard(i, currentPlayer, state, 1); FIXBUG1
                 break;
             }
         }
@@ -1272,6 +1273,9 @@ int discardCard(int handPos, int currentPlayer, struct gameState *state, int tra
         //add card to played pile
         state->playedCards[state->playedCardCount] = state->hand[currentPlayer][handPos];
         state->playedCardCount++;
+
+        state->discard[currentPlayer][ state->discardCount[currentPlayer] ] = state->hand[currentPlayer][handPos]; //FIXBUG1
+        state->discardCount[currentPlayer]++; //FIXBUG1
     }
 
     //set played card to -1
