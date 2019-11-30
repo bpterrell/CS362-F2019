@@ -12,7 +12,7 @@ int main (int argc, char** argv) {
    int numPlayer = 3;
    int bonus = 0;
    int i;
-   int k[10] = {adventurer, council_room, feast, gardens, mine, remodel, smithy, village, baron, great_hall};
+   int k[10] = {adventurer, council_room, tribute, gardens, mine, remodel, smithy, village, baron, great_hall};
    struct gameState G;
       
    memset(&G, 23, sizeof(struct gameState));   // clear the game state
