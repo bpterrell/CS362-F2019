@@ -52,8 +52,8 @@ int main (int argc, char** argv) {
 ;
 
 if (pre_copperCountCP == post_copperCountCP){
-   printf ("FAIL >> Copper was not trashed. %i %i %i\n", pre_copperCountCP, post_copperCountCP,  post_silverCountCP );
-}else printf ("PASS >> Copper was trashed. %i %i %i\n", pre_copperCountCP, post_copperCountCP,  post_silverCountCP );
+   printf ("Bug 1 FAIL >> Copper was not trashed. %i %i %i\n", pre_copperCountCP, post_copperCountCP,  post_silverCountCP );
+}else printf ("Bug 1 PASS >> Copper was trashed. %i %i %i\n", pre_copperCountCP, post_copperCountCP,  post_silverCountCP );
    
   return 0;
 }
