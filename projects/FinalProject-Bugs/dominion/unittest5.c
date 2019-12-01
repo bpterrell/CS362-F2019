@@ -10,7 +10,7 @@ int main (int argc, char** argv) {
    int seed = 1000;
    int numPlayer = 3;
    int i;
-   int bonus = 0;
+   //int bonus = 0;
    int k[10] = {adventurer, council_room, feast, gardens, mine, remodel, smithy, village, baron, great_hall};
    struct gameState G;
 
