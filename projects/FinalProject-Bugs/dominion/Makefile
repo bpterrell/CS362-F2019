@@ -21,24 +21,24 @@ runtests: testDrawCard
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
-unittest: unittest1.c unittest2.c unittest3.c unittest4.c unittest5.c unittest6.c unittest7.c unittest8.c unittest9.c unittest10.c unittest11.c dominion.o
+unittest: unittest1.c unittest3.c unittest2.c unittest4.c unittest5.c unittest6.c unittest7.c unittest8.c unittest9.c unittest10.c unittest11.c dominion.o interface.o
 	echo "unittest1.c:" >> unittestresult.out
 	gcc -o unittest1 dominion.c rngs.c unittest1.c $(CFLAGS)
 	unittest1 >> unittestresult.out
 	gcov dominion.c -b -f >> unittestresult.out 
 
 	echo "unittest2.c:" >> unittestresult.out
-	gcc -o unittest2 dominion.c rngs.c unittest2.c $(CFLAGS)
+	gcc -o unittest2 dominion.c rngs.c interface.c unittest2.c $(CFLAGS)
 	unittest2 >> unittestresult.out
 	gcov dominion.c -b -f >> unittestresult.out 
 
 	echo "unittest3.c:" >> unittestresult.out
-	gcc -o unittest3 dominion.c rngs.c unittest3.c $(CFLAGS)
+	gcc -o unittest3 dominion.c rngs.c interface.c unittest3.c $(CFLAGS)
 	unittest3 >> unittestresult.out
 	gcov dominion.c -b -f >> unittestresult.out 
 
 	echo "unittest4.c:" >> unittestresult.out
-	gcc -o unittest4 dominion.c rngs.c unittest4.c $(CFLAGS)
+	gcc -o unittest4 dominion.c rngs.c interface.c unittest4.c $(CFLAGS)
 	unittest4 >> unittestresult.out
 	gcov dominion.c -b -f >> unittestresult.out 
 
@@ -63,7 +63,7 @@ unittest: unittest1.c unittest2.c unittest3.c unittest4.c unittest5.c unittest6.
 	gcov dominion.c -b -f >> unittestresult.out 
 
 	echo "unittest9.c:" >> unittestresult.out
-	gcc -o unittest9 dominion.c rngs.c unittest9.c $(CFLAGS)
+	gcc -o unittest9 dominion.c rngs.c interface.c unittest9.c $(CFLAGS)
 	unittest9 >> unittestresult.out
 	gcov dominion.c -b -f >> unittestresult.out 
 
@@ -83,5 +83,4 @@ player: player.c interface.o
 all: playdom player 
 
 clean:
-	rm -f *.o playdom.exe playdom player player.exe *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe unittest1 unittest2 unittest3 unittest4 unittest5 unittest6 unittest7 unittest8 unittest9.c unittest10 unittest11 
-
+	rm -f *.o playdom.exe playdom player player.exe *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe unittest1 unittest2 unittest3 unittest4 unittest5 unittest6 unittest7 unittest8 unittest9 unittest10 unittest11
