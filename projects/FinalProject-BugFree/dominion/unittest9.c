@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
     initializeGame(2, k, 1000, &game1);
 
     game1.hand[currentPlayer][0] = tribute;
-    game1.discardCount[1] = 2;
-    game1.discard[1][0] = baron;
-    game1.discard[1][1] = baron;
+    game1.deckCount[1] = 2;
+    game1.deck[1][0] = baron;
+    game1.deck[1][1] = baron;
     printf("Testing two duplicate action cards\n");
     if (actionCount(&game1, currentPlayer)==0) {
         printf("\nSUCCESS: duplicate card ignored and bonus actions added only once.\n");
@@ -71,24 +71,35 @@ int main(int argc, char** argv) {
     }
     printf("-----------------------------------------------------------\n");
 
-    game1.discardCount[1] = 2;
-    game1.discard[1][0] = baron;
-    game1.discard[1][1] = mine;
-    printf("Testing two distinct action cards\n");
-    if (actionCount(&game1, currentPlayer)==1) {
-        printf("\nSUCCESS: duplicate card ignored and bonus actions added only once.\n");
+    game1.deckCount[1] = 2;
+    game1.deck[1][0] = baron;
+    game1.deck[1][1] = estate;
+    printf("Testing one action card and one tribute card\n");
+    if (actionCount(&game1, currentPlayer)==0) {
+        printf("\nSUCCESS: bonus actions added only once.\n");
     } else {
-        printf("\nFAILURE: duplicate card not ignored and bonus actions added twice.\n");
+        printf("\nFAILURE: bonus actions added twice.\n");
     }
     printf("-----------------------------------------------------------\n");
 
-    game1.discardCount[1] = 2;
-    game1.discard[1][0] = estate;
-    game1.discard[1][1] = estate;
+    game1.deckCount[1] = 2;
+    game1.deck[1][0] = baron;
+    game1.deck[1][1] = mine;
+    printf("Testing two distinct action cards\n");
+    if (actionCount(&game1, currentPlayer)==1) {
+        printf("\nSUCCESS: bonus actions added twice because action cards are distinct.\n");
+    } else {
+        printf("\nFAILURE: action cards seen as duplicates and added only once.\n");
+    }
+    printf("-----------------------------------------------------------\n");
+
+    game1.deckCount[1] = 2;
+    game1.deck[1][0] = estate;
+    game1.deck[1][1] = estate;
     printf("Testing two duplicate victory cards\n");
     if (getHandCount(&game1, currentPlayer)==1) {
         printf("\nSUCCESS: duplicate card ignored and bonus actions added only once.\n");
     } else {
-        printf("\nFAILURE: duplicate card not ignored and bonus actions added twice.\n");
+        printf("\nFAILURE: duplicate card not ignored and bonus actions added for non action card.\n");
     }
 }

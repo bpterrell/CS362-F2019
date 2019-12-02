@@ -42,16 +42,16 @@ int main(int argc, char** argv)
 
     printf("-----------------------------------------------------------\n");
     for (i = 0; i < pileCount; i++) {
-        if (i < 25) {
+        if (i < 24) {
 
             game1.supplyCount[i] = 5;
         } else {
             game1.supplyCount[i] = 0;
         }
     }
-    printf("\nTesting isGameOver when last 2 supply piles are full.\n");
+    printf("\nTesting isGameOver when last 3 supply piles are empty.\n");
     if (isGameOver(&game1)==1) {
-        printf("SUCCESS: successfully determined game is still in play.\n");
+        printf("SUCCESS: successfully determined game is not still in play.\n");
     } else {
         printf("FAILURE: game should be over.\n");
     }
