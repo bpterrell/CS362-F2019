@@ -50,13 +50,11 @@ int actionCount(struct gameState *pre, int currentPlayer) {
 
 int main(int argc, char** argv) {
     struct gameState game1;
-    int i;
 
     int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
                  sea_hag, tribute, smithy, council_room};
 
     int currentPlayer = 0;
-    int result;
     initializeGame(2, k, 1000, &game1);
 
     game1.hand[currentPlayer][0] = tribute;
@@ -97,7 +95,7 @@ int main(int argc, char** argv) {
     game1.deck[1][0] = estate;
     game1.deck[1][1] = estate;
     printf("Testing two duplicate victory cards\n");
-    if (getHandCount(&game1, currentPlayer)==1) {
+    if (getHandCount(&game1, currentPlayer)==0) {
         printf("\nSUCCESS: duplicate card ignored and bonus actions added only once.\n");
     } else {
         printf("\nFAILURE: duplicate card not ignored and bonus actions added for non action card.\n");

@@ -392,7 +392,7 @@ int endTurn(struct gameState *state) {
 int isGameOver(struct gameState *state) {
     int i;
     int j;
-
+    int pileCount = sizeof(state->supplyCount)/ sizeof(state->supplyCount[0]); //FIXBUG 4
     //if stack of Province cards is empty, the game ends
     if (state->supplyCount[province] == 0)
     {
@@ -401,7 +401,7 @@ int isGameOver(struct gameState *state) {
 
     //if three supply pile are at 0, the game ends
     j = 0;
-    for (i = 0; i < 25; i++)
+    for (i = 0; i < pileCount; i++) //FIXBUG 4
     {
         if (state->supplyCount[i] == 0)
         {
@@ -819,7 +819,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             return -1;
         }
 
-        if ( (getCost(state->hand[currentPlayer][choice1]) + 3) > getCost(choice2) )
+        if ( (getCost(state->hand[currentPlayer][choice1]) + 3) < getCost(choice2) ) //FIXBUG 2
         {
             return -1;
         }
@@ -845,7 +845,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     case remodel:
         j = state->hand[currentPlayer][choice1];  //store card we will trash
 
-        if ( (getCost(state->hand[currentPlayer][choice1]) + 2) > getCost(choice2) )
+        if ( (getCost(state->hand[currentPlayer][choice1]) + 2) < getCost(choice2) ) //FIXBUG 3
         {
             return -1;
         }
@@ -1058,14 +1058,17 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
                 shuffle(nextPlayer,state);//Shuffle the deck
             }
-            //tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];
+
+            tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];
             state->deck[nextPlayer][state->deckCount[nextPlayer]-1] = -1; //FIXBUG5 FIXBUG8
-            //state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1; 
-            state->deckCount[nextPlayer]--;
+//            state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
+            state->deckCount[nextPlayer] = state->deckCount[nextPlayer]-1; //FIXBUG 9
+
             tributeRevealedCards[1] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];
             state->deck[nextPlayer][state->deckCount[nextPlayer]-1] = -1; //FIXBUG5 FIXBUG8
-            //state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
-            state->deckCount[nextPlayer]--;
+//            state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
+            state->deckCount[nextPlayer] = state->deckCount[nextPlayer]-1; //FIXBUG 9
+
         }
 
         if (tributeRevealedCards[0] == tributeRevealedCards[1]) { //If we have a duplicate card, just drop one
@@ -1084,6 +1087,13 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
                 drawCard(currentPlayer, state);
                 drawCard(currentPlayer, state);
             }
+            // FIXBUG 9 START
+            else if (tributeRevealedCards[i] == -1) {
+                if (DEBUG) {
+                    printf("Duplicate card ignored.");
+                }
+            }
+            //FIXBUG 9 END
             else { //Action Card
                 state->numActions = state->numActions + 2;
             }

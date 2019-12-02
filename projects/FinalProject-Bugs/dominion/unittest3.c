@@ -57,9 +57,7 @@ int checkDiscardCount(struct gameState *pre, int currentPlayer, int card, int ch
     int countPost=0;
     struct gameState post;
     memcpy (&post, pre, sizeof(struct gameState));
-    int c1 = pre->hand[currentPlayer][choice1];
     check = cardEffect(remodel, choice1, choice2, 0, &post, 0, 0);
-//    assert(check==0);
     printf("\n\tDiscard content before: ");
     printCards(currentPlayer, pre, "discard");
 
@@ -87,8 +85,7 @@ int checkHandCount(struct gameState *pre, int currentPlayer, int card, int choic
     int check;
     int countPre=0;
     int countPost=0;
-    int newCountPre=0;
-    int newCountPost=0;
+
     struct gameState post;
     int c1 = pre->hand[currentPlayer][choice1];
     memcpy (&post, pre, sizeof(struct gameState));
@@ -117,10 +114,7 @@ int checkHandCount(struct gameState *pre, int currentPlayer, int card, int choic
     }
 
     if (countPre - 1 != countPost) {return 1;}
-
-
-
-
+    return 0;
 }
 
 int main(int argc, char** argv)

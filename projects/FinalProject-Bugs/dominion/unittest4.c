@@ -18,12 +18,10 @@ int main(int argc, char** argv)
 {
     struct gameState game1;
     int i;
-
     int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
                  sea_hag, tribute, smithy, council_room};
 
-    int currentPlayer = 0;
-    int result;
+
     initializeGame(2, k, 1000, &game1);
 
     int pileCount = sizeof(game1.supplyCount)/ sizeof(game1.supplyCount[0]);
