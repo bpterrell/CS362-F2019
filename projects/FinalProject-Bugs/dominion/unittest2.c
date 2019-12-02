@@ -1,5 +1,5 @@
 // CS 362 F19 400
-// 11/07/19
+// 12/01/19
 // Final Project Part B - unittest2.c
 // Unit test for mine card
 // Created by: Kara Manseau
