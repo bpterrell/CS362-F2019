@@ -52,13 +52,15 @@ int main (int argc, char** argv) {
    G.numActions = 0;
 
    int pre_numAct = G.numActions;
-   int pre_coins = G.coins;
+   //int pre_coins = G.coins;
+   int pre_coins = bonus;
    int pre_handCount = G.handCount[currentPlayer];
 
    cardEffect(tribute, 0, 0, 0, &G, 0, &bonus);
    
    int post_numAct = G.numActions;
-   int post_coins = G.coins;
+   //int post_coins = G.coins;
+   int post_coins = bonus;
    int post_handCount = G.handCount[currentPlayer];
 
    if (pre_numAct != post_numAct){

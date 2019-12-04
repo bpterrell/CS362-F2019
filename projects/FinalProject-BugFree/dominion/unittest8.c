@@ -36,7 +36,7 @@ int main (int argc, char** argv) {
   
    int post_coins = G.coins;
    
-   printf( "%i %i\n", pre_coins, post_coins);
+   //printf( "%i %i\n", pre_coins, post_coins);
    
    if (pre_coins + 4 != post_coins){
       printf ("Bug 8 Baron FAIL >> Baron did not properly award coins.\n");
@@ -64,7 +64,7 @@ int main (int argc, char** argv) {
   
    post_coins = G.coins;
    
-   printf( "%i %i\n", pre_coins, post_coins);
+   //printf( "%i %i\n", pre_coins, post_coins);
    
    if (pre_coins + 2 != post_coins){
       printf ("Bug 8 Minion FAIL >> Minion did not properly award coins.\n");
@@ -107,7 +107,7 @@ int main (int argc, char** argv) {
    playCard(0, 0, 0, 0, &G);
    post_coins = G.coins;
    
-   printf( "%i %i\n", pre_coins, post_coins);
+   //printf( "%i %i\n", pre_coins, post_coins);
    
    if (pre_coins + 4 != post_coins){
       printf ("Bug 8 FAIL >> Tribute overran array and awarded extra coins.\n");
@@ -135,7 +135,7 @@ int main (int argc, char** argv) {
   
    post_coins = G.coins;
    
-   printf( "%i %i\n", pre_coins, post_coins);
+   //printf( "%i %i\n", pre_coins, post_coins);
    
    if (pre_coins + 2 != post_coins){
       printf ("Bug 8 Embargo FAIL >> Embargo did not properly award coins.\n");

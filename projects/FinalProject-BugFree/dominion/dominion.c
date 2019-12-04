@@ -760,7 +760,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
         //Backup hand
 
         //Update Coins for Buy
-        updateCoins(currentPlayer, state, 5);
+        //updateCoins(currentPlayer, state, 5);
         x = 1;//Condition to loop on
         while( x == 1) {//Buy one card
             if (supplyCount(choice1, state) <= 0) {
@@ -773,7 +773,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             }
             else if (state->coins < getCost(choice1)) {
                 printf("That card is too expensive!\n");
-
+                x = -1; //JS Fix
                 if (DEBUG) {
                     printf("Coins: %d < %d\n", state->coins, getCost(choice1));
                 }
@@ -786,7 +786,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
                 gainCard(choice1, state, 0, currentPlayer);//Gain the card
                 x = 0;//No more buying cards
-
+                updateCoins(currentPlayer, state, getCost(choice1)); //JS Fixk
                 if (DEBUG) {
                     printf("Deck Count: %d\n", state->handCount[currentPlayer] + state->deckCount[currentPlayer] + state->discardCount[currentPlayer]);
                 }
@@ -967,7 +967,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             //state->coins = state->coins + 2;
             *bonus += 2; // FIXBUG8
         }
-        else if (choice2)		//discard hand, redraw 4, other players with 5+ cards discard hand and draw 4
+        else //if(choice2)		//discard hand, redraw 4, other players with 5+ cards discard hand and draw 4
         {
             //discard hand
             while(numHandCards(state) > 0)
@@ -1116,7 +1116,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
         for (i = 0; i < state->handCount[currentPlayer]; i++)
         {
-            if (i != handPos && i == state->hand[currentPlayer][choice1] && i != choice1)
+            if (i != handPos && state->hand[currentPlayer][i] == state->hand[currentPlayer][choice1] && i != choice1)
             {
                 j++;
             }
